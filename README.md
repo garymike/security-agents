@@ -37,8 +37,8 @@ lets it *run untrusted code safely*.
 
 | Flavor | Brains (skill) | Hands (toolbox) | What it does |
 |---|---|---|---|
-| **mcp-reviewer** — *first* | `mcp-security-review` | `mcp-review-toolbox` | Assess an untrusted MCP server end-to-end: static scan → sandboxed run → risk-rated report |
-| skill-auditor | *(skill-audit method)* | `skill-audit-toolbox` | Review an agent skill, incl. the developer-execution surface |
+| **mcp-reviewer** | `mcp-security-review` | `mcp-review-toolbox` | Assess an untrusted MCP server end-to-end: static scan → sandboxed run → risk-rated report |
+| **skill-auditor** | `skill-security-review` *(to author)* | `skill-audit-toolbox` | Review an agent skill on both surfaces: static gates → sandboxed script execution → risk-rated report |
 | llm-redteam | *(Promptfoo-driven)* | `sast-toolbox` + Promptfoo | Red-team a running LLM app for prompt injection / data exfiltration |
 | supply-chain-watchdog | — | base + Trivy/osv-scanner | Runtime dependency + egress monitoring inside a pipeline |
 
@@ -52,9 +52,11 @@ lets it *run untrusted code safely*.
 
 ## Status
 
-Foundation + the first flavor (**mcp-reviewer**) scaffold — see
-[`agents/mcp-reviewer/`](agents/mcp-reviewer/). Additional flavors are designed but not yet
-built.
+Foundation + two flavor scaffolds — **mcp-reviewer**
+([`agents/mcp-reviewer/`](agents/mcp-reviewer/)) and **skill-auditor**
+([`agents/skill-auditor/`](agents/skill-auditor/)). The remaining flavors (llm-redteam,
+supply-chain-watchdog) are designed but not yet built. The `skill-security-review` method
+that skill-auditor calls is not yet authored (see its README) — the next brains-side piece.
 
 ## Relationship to the rest of the platform
 
