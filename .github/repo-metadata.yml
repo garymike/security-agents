@@ -1,0 +1,6 @@
+# Declares the intended visibility and purpose of this repo (checked by security-audit).
+visibility: public
+purpose: >
+  Tier 2 of the security platform: deployable security agents (a skill + a pinned toolbox
+  image + an isolated sandbox) for dynamic security review that runs untrusted targets
+  safely. Complements the static garymike/security-workflows platform.

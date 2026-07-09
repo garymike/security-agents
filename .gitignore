@@ -1,0 +1,13 @@
+# local run artifacts
+out/
+reports/
+*.sarif
+*.log
+
+# secrets / env
+.env
+.env.*
+!.env.example
+
+# targets cloned for review (never commit an untrusted target)
+targets/

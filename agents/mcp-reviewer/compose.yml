@@ -1,0 +1,33 @@
+name: mcp-reviewer
+
+# Two planes: the Tier-1 static tool-belt (no network) and an egress-gated sandbox where an
+# untrusted MCP server is actually run and observed. Pin `toolbox` by digest for real use.
+
+services:
+  # Static tool-belt — pinned, signed scanners. No network: static analysis only.
+  toolbox:
+    image: ghcr.io/garymike/security-workflows/mcp-review-toolbox:latest
+    network_mode: none
+    volumes:
+      - ./targets:/target:ro
+    working_dir: /target
+
+  # Sandbox — where the untrusted server is executed and observed. Hardened + egress-gated.
+  sandbox:
+    build: ./sandbox
+    networks: [isolated]          # internal-only network: no route to the internet
+    volumes:
+      - ./targets:/target:ro      # target mounted read-only
+    working_dir: /target
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/reviewer/.cache
+    cap_drop: ["ALL"]
+    security_opt:
+      - "no-new-privileges:true"
+    # No host credentials, no env secrets, no bind to the host network.
+
+networks:
+  isolated:
+    internal: true                # egress-gated by default; add a logged proxy to allow narrow egress
