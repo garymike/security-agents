@@ -33,7 +33,8 @@ The `skill-security-review` method drives these steps; this agent wires the tool
 1. **Identify & pin.** Clone the skill into `./targets/<name>` at a specific commit (record
    the SHA).
 2. **Static analysis** (no network): the test-file gate (developer surface) + SkillSpector
-   `--no-llm` (agent surface).
+   `--no-llm` (agent surface). The gate emits SARIF and flags the auto-executed files as
+   **detonation candidates** for step 3 — the static→dynamic escalation ([ADR-0005](../../docs/adr/0005-static-dynamic-escalation.md)).
 3. **Dynamic analysis** (the Tier-2 addition): execute each bundled script the skill ships
    (`scripts/`, hooks, examples) in the sandbox and observe filesystem writes, outbound
    network *attempts* (blocked — the attempt is the signal), and subprocesses — with **no
