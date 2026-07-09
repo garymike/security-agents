@@ -50,6 +50,9 @@ lets it *run untrusted code safely*.
 - Nothing dynamic is centralized into the shared Tier-1 images — each agent is deployed and
   run in the operator's own isolation.
 
+The load-bearing decisions above — the tier boundary, the agent anatomy, the sandbox hardening, the
+flavor unit, and the static→dynamic escalation — are recorded as [ADRs](docs/adr/).
+
 ## Status
 
 Foundation + two flavor scaffolds — **mcp-reviewer**
