@@ -1,0 +1,23 @@
+name: mcp-gateway
+
+# Pipelock (adopted, pinned, signed) as a local MCP proxy: it interposes on the JSON-RPC stream between the
+# client and an untrusted MCP server, scans it for exfiltration / injection / SSRF, and emits signed action
+# receipts. Alert-only by default (config/gateway.observe.yaml); flip to config/gateway.enforce.yaml to block.
+#
+# This is the Docker/Podman path. On a box without Docker Desktop, use ./gateway.sh (docker -> podman -> wslc);
+# note wslc does not support compose yet (see security-workflows docs/local-runner.md).
+
+services:
+  # The gateway engine. Pinned by DIGEST — the pipelock config schema is version-coupled to the binary, so the
+  # image and config/*.yaml move together. `:3.0.0` is the tag the digest resolved from, for readability.
+  gateway:
+    image: ghcr.io/luckypipewrench/pipelock:3.0.0@sha256:49b6ee229941d0d7d0c7431949edeeb878f3bfa6f092f36abff8eed09ac7836b
+    volumes:
+      - ./config:/config:ro          # the policy (authored now; compiler-generated in Milestone C)
+      # For the proxy form, also mount:
+      #   - ./out:/out               # signed action receipts — audit evidence from outside the agent
+      #   - ./targets:/target:ro     # the MCP server being protected, read-only
+    # Default command validates the policy + shows a content-aware block. To actually mediate a stdio MCP
+    # server, the CLIENT launches the proxy form instead of the server (put this in the client's MCP config):
+    #   pipelock mcp proxy --config /config/gateway.observe.yaml -- <server start command>
+    command: ["check", "--config", "/config/gateway.observe.yaml", "--url", "https://docs.python.org/3/"]

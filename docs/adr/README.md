@@ -13,3 +13,4 @@ Sibling records for the static tier live in
 | [0004](0004-flavor-is-the-unit.md) | The flavor is the unit of packaging | Accepted |
 | [0005](0005-static-dynamic-escalation.md) | Static → dynamic escalation, with the tiers kept separate | Accepted |
 | [0006](0006-dogfood-and-solo-governance.md) | Dogfood the platform; solo-maintainer governance | Accepted |
+| [0007](0007-runtime-gateway-and-assess-enforce.md) | Runtime gateway: adopt pipelock, compile reviews into policy, alert-only by default | Accepted |

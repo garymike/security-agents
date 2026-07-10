@@ -1,0 +1,44 @@
+# mcp-gateway — ENFORCE policy for pipelock 3.0.0.
+#
+# The opt-in counterpart to gateway.observe.yaml (plan Q4b): identical policy, but every `action` is `block`.
+# A flagged call is STOPPED (fail-closed) with a structured block message + a signed receipt. This is the mode
+# the CI proof-fixture (Milestone C) runs in to prove "review-flagged X -> policy blocks X." Alert-only remains
+# the shipped default; this is the deliberate flip.
+#
+# Pinned to the pipelock 3.0.0 schema (version-coupled to the image digest in compose.yml).
+
+version: 1
+mode: balanced
+
+api_allowlist:
+  - "*.anthropic.com"
+  - "*.openai.com"
+  - "*.githubusercontent.com"
+  - "registry.npmjs.org"
+
+request_body_scanning:
+  enabled: true
+  action: block
+
+response_scanning:
+  enabled: true
+  action: block
+mcp_input_scanning:
+  enabled: true
+  action: block
+mcp_tool_scanning:
+  enabled: true
+  action: block
+
+mcp_tool_policy:
+  enabled: true
+  action: block
+  rules:
+    - name: "Credential File Access"
+      tool_pattern: '(?i)^(bash|shell|exec|run_command|execute|terminal|read_file|file_read)$'
+      arg_pattern: '(?i)(\.ssh/(id_|authorized)|\.aws/credentials|\.env\b|\.netrc|/etc/shadow)'
+      action: block
+    - name: "Reverse Shell"
+      tool_pattern: '(?i)^(bash|shell|exec|run_command|execute|terminal)$'
+      arg_pattern: '(?i)(bash\s+-i\s+>&|/dev/tcp/|mkfifo\s+|nc\s+-e|ncat\s+-e)'
+      action: block
