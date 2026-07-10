@@ -23,7 +23,7 @@ fi
 
 PY="$(command -v python || command -v python3)"; [ -n "$PY" ] || { echo "rego-proof: python not found"; exit 2; }
 
-WORK="$(mktemp -d)"; trap 'rm -rf "$WORK"' EXIT
+WORK="$(mktemp -d)"; chmod 0755 "$WORK"; trap 'rm -rf "$WORK"' EXIT  # 0755: OPA runs non-root and must read the mount
 fail(){ echo "FAIL: $1"; exit 1; }
 
 "$PY" compile.py example-assessment.json "$WORK" >/dev/null || fail "compiler errored on a valid assessment"
@@ -31,15 +31,16 @@ fail(){ echo "FAIL: $1"; exit 1; }
 
 # Evaluate the generated Rego with OPA. --format raw prints just the boolean.
 opa_eval(){  # opa_eval <input-json> -> prints true|false
-  printf '%s' "$1" > "$WORK/input.json"
+  printf '%s' "$1" > "$WORK/input.json"; chmod 0644 "$WORK/input.json"
+  # Capture only stdout (the verdict); pull progress + any errors go to stderr (visible, not captured).
   case "$(uname -s 2>/dev/null || echo x)" in
-    MINGW*|MSYS*|CYGWIN*) local h; h="$(cygpath -w "$WORK")"; MSYS_NO_PATHCONV=1 "$RT" run --rm -v "${h}:/w:ro" "$OPA_IMAGE" eval -i /w/input.json -d /w/policy.rego "$QUERY" --format raw 2>&1 ;;
-    *)                    "$RT" run --rm -v "${WORK}:/w:ro" "$OPA_IMAGE" eval -i /w/input.json -d /w/policy.rego "$QUERY" --format raw 2>&1 ;;
+    MINGW*|MSYS*|CYGWIN*) local h; h="$(cygpath -w "$WORK")"; MSYS_NO_PATHCONV=1 "$RT" run --rm -v "${h}:/w:ro" "$OPA_IMAGE" eval -i /w/input.json -d /w/policy.rego "$QUERY" --format raw ;;
+    *)                    "$RT" run --rm -v "${WORK}:/w:ro" "$OPA_IMAGE" eval -i /w/input.json -d /w/policy.rego "$QUERY" --format raw ;;
   esac
 }
 
 expect(){  # expect <input-json> <true|false> <label>
-  local got; got="$(opa_eval "$1" | tr -d '[:space:]')"
+  local got; got="$(opa_eval "$1" | tail -n1 | tr -d '[:space:]')"
   [ "$got" = "$2" ] || fail "$3 (expected allow=$2, got allow='$got')"
 }
 
