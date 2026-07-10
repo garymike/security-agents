@@ -1,0 +1,30 @@
+name: mcp-gateway proof
+
+# Continuously proves the assess->enforce compiler (ADR-0007): the generated policy validates against the
+# pinned pipelock, ENFORCE blocks a review-unapproved egress while OBSERVE alerts-only, and the package-runner
+# (npx/uvx) guard fires. pipelock runs via Docker (public GHCR image, no auth); python3 is preinstalled.
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "agents/mcp-gateway/**"
+      - ".github/workflows/mcp-gateway-proof.yml"
+  pull_request:
+    paths:
+      - "agents/mcp-gateway/**"
+      - ".github/workflows/mcp-gateway-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: Assess->enforce proof-fixture (pipelock via docker)
+        run: bash agents/mcp-gateway/compiler/proof.sh
