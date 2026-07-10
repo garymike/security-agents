@@ -1,0 +1,53 @@
+# mcp-gateway — ALERT-ONLY (observe) policy for pipelock 3.0.0.
+#
+# Posture (see the security-workflows plan, Q4/Q4b): alert-only is the SHIPPED DEFAULT. Every control's
+# `action` is `warn`, so a malicious call is RECORDED (a signed action receipt) but not blocked. To enforce,
+# use config/gateway.enforce.yaml (same policy, `action: block`) — or flip individual rules. The assess->enforce
+# compiler (Milestone C) GENERATES this file from an `mcp-reviewer` assessment; this hand-authored baseline is
+# the Milestone-B starting point.
+#
+# Pinned to the pipelock 3.0.0 schema — the config schema is version-coupled to the binary, so this file and the
+# image digest in compose.yml move together.
+
+version: 1
+mode: balanced
+
+# Expected egress. The compiler fills this from the review's observed/approved destinations; anything else is
+# flagged (warn) here, or blocked in enforce mode.
+api_allowlist:
+  - "*.anthropic.com"
+  - "*.openai.com"
+  - "*.githubusercontent.com"
+  - "registry.npmjs.org"
+
+# Outbound content scanning — alert when secrets would leave in a request body or header.
+request_body_scanning:
+  enabled: true
+  action: warn
+
+# Inbound content scanning — alert on prompt-injection / tool-poisoning in tool output and tool-definition schemas.
+response_scanning:
+  enabled: true
+  action: warn
+mcp_input_scanning:
+  enabled: true
+  action: warn
+mcp_tool_scanning:
+  enabled: true
+  action: warn
+
+# Per-tool policy. `action: warn` is the alert-only default; the compiler appends review-derived rules. These
+# curated examples overlap the skill-gate malice patterns (credential access, reverse shell) — one threat model
+# across the static gate and the runtime gateway.
+mcp_tool_policy:
+  enabled: true
+  action: warn
+  rules:
+    - name: "Credential File Access"
+      tool_pattern: '(?i)^(bash|shell|exec|run_command|execute|terminal|read_file|file_read)$'
+      arg_pattern: '(?i)(\.ssh/(id_|authorized)|\.aws/credentials|\.env\b|\.netrc|/etc/shadow)'
+      action: warn
+    - name: "Reverse Shell"
+      tool_pattern: '(?i)^(bash|shell|exec|run_command|execute|terminal)$'
+      arg_pattern: '(?i)(bash\s+-i\s+>&|/dev/tcp/|mkfifo\s+|nc\s+-e|ncat\s+-e)'
+      action: warn
