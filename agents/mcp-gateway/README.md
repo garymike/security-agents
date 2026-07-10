@@ -51,8 +51,9 @@ traceable to a review finding (the [policy contract](../../docs/mcp-policy-contr
 
 ```bash
 python compiler/compile.py compiler/example-assessment.json ./config
-# -> config/{policy-contract.json, gateway.observe.yaml, gateway.enforce.yaml}
-bash compiler/proof.sh        # continuously proves: enforce blocks review-unapproved egress, observe alerts-only
+# -> config/{policy-contract.json, gateway.observe.yaml, gateway.enforce.yaml, policy.rego}
+bash compiler/proof.sh        # pipelock: enforce blocks review-unapproved egress, observe alerts-only
+bash compiler/rego-proof.sh   # OPA/Rego adapter reaches the SAME allow/deny -> the contract is engine-neutral
 ```
 
 ## Safety & honest residual
@@ -72,4 +73,7 @@ bash compiler/proof.sh        # continuously proves: enforce blocks review-unapp
 - **Milestone C:** the assess→enforce [compiler](compiler/) (`assessment.json` → policy) + an enforce-mode CI
   [proof-fixture](compiler/proof.sh) asserting *review-unapproved egress → generated policy blocks it*, plus the
   [neutral policy-contract spec](../../docs/mcp-policy-contract.md). ✅
-- **Next:** the ContextForge OPA/Rego adapter (enterprise tier); wiring a real `mcp-reviewer` run end-to-end.
+- **Milestone D:** the **OPA/Rego adapter** (ContextForge enterprise tier) — a second adapter of the same
+  contract, with [`rego-proof.sh`](compiler/rego-proof.sh) proving OPA reaches the same allow/deny (the contract
+  is engine-neutral, not a single-adapter fiction). ✅
+- **Next:** wiring a real `mcp-reviewer` run end-to-end (review → assessment.json → compile → enforce).
