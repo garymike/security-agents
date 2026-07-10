@@ -28,3 +28,5 @@ jobs:
           persist-credentials: false
       - name: Assess->enforce proof-fixture (pipelock via docker)
         run: bash agents/mcp-gateway/compiler/proof.sh
+      - name: Engine-neutrality proof (OPA/Rego adapter via docker)
+        run: bash agents/mcp-gateway/compiler/rego-proof.sh

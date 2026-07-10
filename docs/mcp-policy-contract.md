@@ -8,13 +8,14 @@ does, because they all start from hand-authored YAML.
 ```
 assessment.json  ──►  policy contract (this schema)  ──►  adapter  ──►  gateway config
 (mcp-reviewer)        (engine-agnostic)                   (pipelock)     (pipelock.yaml)
-                                                          (ContextForge) (OPA/Rego — future)
+                                                          (ContextForge) (OPA/Rego — built ✓)
 ```
 
 The contract is why picking an engine costs little (see [ADR-0007](adr/0007-runtime-gateway-and-assess-enforce.md)):
-the compiler targets *this*, and a thin per-engine adapter renders it. Today one adapter targets
-[pipelock](https://github.com/luckyPipewrench/pipelock); an enterprise OPA/Rego adapter (ContextForge) renders
-the same contract later.
+the compiler targets *this*, and a thin per-engine adapter renders it. **Two adapters exist:**
+[pipelock](https://github.com/luckyPipewrench/pipelock) (local firewall) and **OPA/Rego** (the ContextForge
+enterprise tier). [`rego-proof.sh`](../agents/mcp-gateway/compiler/rego-proof.sh) shows OPA reaching the *same*
+allow/deny as pipelock from the same contract — so the neutrality is **proven, not asserted**.
 
 ## Schema
 
@@ -66,3 +67,8 @@ Alert-only is the shipped default; enforce is the opt-in flip (plan Q4/Q4b). The
 generated configs validate; in **enforce** the policy **blocks an egress the review never approved** while
 **observe alerts-only**; and the package-runner guard fires. That is *scan → detonate → **enforce***, proven
 continuously.
+
+[`rego-proof.sh`](../agents/mcp-gateway/compiler/rego-proof.sh) asserts the **OPA/Rego adapter** reaches the
+*same* allow/deny from the *same* contract (default-deny; review-approved tools + observed egress only) — so the
+contract is genuinely engine-neutral, not a single-adapter fiction. Both run in CI
+([`mcp-gateway-proof.yml`](../.github/workflows/mcp-gateway-proof.yml)).
