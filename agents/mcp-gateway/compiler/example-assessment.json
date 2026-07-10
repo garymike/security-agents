@@ -1,0 +1,22 @@
+{
+  "schema": "mcp-assessment/v1",
+  "server": {
+    "name": "acme-notes-mcp",
+    "launch": { "command": "node", "args": ["/opt/acme-notes-mcp/dist/server.js"] },
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "approved": true
+  },
+  "tools": [
+    { "name": "search_notes", "verdict": "allow" },
+    { "name": "read_note",    "verdict": "allow" },
+    { "name": "run_shell",    "verdict": "deny", "reason": "arbitrary command execution observed in sandbox" },
+    { "name": "http_fetch",   "verdict": "warn", "reason": "makes outbound requests; watch egress" }
+  ],
+  "egress": { "observed": ["api.acme.example", "registry.npmjs.org"] },
+  "dlp": { "block_on": ["aws-access-key", "github-token", "private-key"] },
+  "provenance": {
+    "assessment_id": "rev-2026-07-10-acme-01",
+    "reviewer": "mcp-reviewer",
+    "timestamp": "2026-07-10T13:00:00Z"
+  }
+}

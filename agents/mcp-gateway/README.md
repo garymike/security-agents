@@ -4,9 +4,10 @@ Govern an **MCP server at runtime** — a local firewall on the JSON-RPC stream 
 *review* into an *enforced* policy. This is the operations tier the `mcp-reviewer` assessment already
 assumes: it closes the ladder **scan → detonate → enforce**.
 
-- **Brains:** an **assess→enforce compiler** (Milestone C) that turns an [`mcp-reviewer`](../mcp-reviewer)
-  `assessment.json` into a runtime policy — every rule traceable to a review finding. *Until it lands, the
-  policy in [`config/`](config) is hand-authored.*
+- **Brains:** the **assess→enforce [compiler](compiler/)** — turns an [`mcp-reviewer`](../mcp-reviewer)
+  `assessment.json` into a runtime policy (every rule traceable to a review finding) via the engine-agnostic
+  [policy contract](../../docs/mcp-policy-contract.md). The hand-authored [`config/`](config) policies are the
+  baseline; `compiler/compile.py` generates them from a review.
 - **Hands:** [**pipelock**](https://github.com/luckyPipewrench/pipelock) — an adopted, **pinned, signed**
   firewall engine (Apache-2.0). We wrap it unmodified as separate plumbing; we do not fork it
   (aggregator, not a fork). It scans HTTP/WebSocket/MCP traffic for exfiltration, injection, and SSRF, and
@@ -43,6 +44,17 @@ in the client's MCP config:
 pipelock mcp proxy --config /config/gateway.observe.yaml -- <server start command>
 ```
 
+### Compile a review into policy
+
+The [compiler](compiler/) turns an `mcp-reviewer` `assessment.json` into the two policies above — every rule
+traceable to a review finding (the [policy contract](../../docs/mcp-policy-contract.md)):
+
+```bash
+python compiler/compile.py compiler/example-assessment.json ./config
+# -> config/{policy-contract.json, gateway.observe.yaml, gateway.enforce.yaml}
+bash compiler/proof.sh        # continuously proves: enforce blocks review-unapproved egress, observe alerts-only
+```
+
 ## Safety & honest residual
 
 - The gateway only governs an MCP server **routed through it**. A server the client launches *directly*
@@ -56,7 +68,8 @@ pipelock mcp proxy --config /config/gateway.observe.yaml -- <server start comman
 
 ## Status
 
-- **Milestone B (this):** wrap the pinned engine + authored alert-only/enforce policies, runnable on any
-  runtime. ✅
-- **Milestone C (next):** the assess→enforce compiler (`assessment.json` → policy) + an enforce-mode CI
-  proof-fixture asserting *review-flagged X → generated policy blocks X*, and the neutral policy-contract spec.
+- **Milestone B:** wrap the pinned engine + authored alert-only/enforce policies, runnable on any runtime. ✅
+- **Milestone C:** the assess→enforce [compiler](compiler/) (`assessment.json` → policy) + an enforce-mode CI
+  [proof-fixture](compiler/proof.sh) asserting *review-unapproved egress → generated policy blocks it*, plus the
+  [neutral policy-contract spec](../../docs/mcp-policy-contract.md). ✅
+- **Next:** the ContextForge OPA/Rego adapter (enterprise tier); wiring a real `mcp-reviewer` run end-to-end.
