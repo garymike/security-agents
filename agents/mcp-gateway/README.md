@@ -56,6 +56,10 @@ bash compiler/proof.sh        # pipelock: enforce blocks review-unapproved egres
 bash compiler/rego-proof.sh   # OPA/Rego adapter reaches the SAME allow/deny -> the contract is engine-neutral
 ```
 
+**Real target:** [`examples/github-mcp-server/`](examples/github-mcp-server) runs a real, pinned server
+(`github/github-mcp-server`) end-to-end — the compiled policy allows only `api.github.com` + the approved tools
+and blocks the rest, in both engines (`verify.sh`, run in CI).
+
 ## Safety & honest residual
 
 - The gateway only governs an MCP server **routed through it**. A server the client launches *directly*

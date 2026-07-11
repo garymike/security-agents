@@ -1,0 +1,31 @@
+{
+  "schema": "mcp-assessment/v1",
+  "_note": "A representative review of a REAL, pinned MCP server (github/github-mcp-server @ c36e4e4493c7, 2026-07-10). Tools are a representative subset of ~100; verdicts reflect a least-privilege review. sha256 is the distributed container image digest (the server ships as ghcr.io/github/github-mcp-server).",
+  "server": {
+    "name": "github-mcp-server",
+    "launch": { "command": "/usr/local/bin/github-mcp-server", "args": ["stdio"] },
+    "sha256": "e25564dccc9110a70a77b9df560cbde11aa392fcb5f08b9abe5c4ebc6d146ea4",
+    "approved": true
+  },
+  "tools": [
+    { "name": "get_me",              "verdict": "allow", "reason": "read-only identity" },
+    { "name": "get_file_contents",   "verdict": "allow", "reason": "read-only" },
+    { "name": "get_commit",          "verdict": "allow", "reason": "read-only" },
+    { "name": "get_commits",         "verdict": "allow", "reason": "read-only" },
+    { "name": "get_repository_tree", "verdict": "allow", "reason": "read-only" },
+    { "name": "get_diff",            "verdict": "allow", "reason": "read-only" },
+    { "name": "create_branch",           "verdict": "warn", "reason": "mutation; low blast radius" },
+    { "name": "create_or_update_file",   "verdict": "warn", "reason": "writes repo content" },
+    { "name": "create_pull_request",     "verdict": "warn", "reason": "opens a PR" },
+    { "name": "delete_file",                    "verdict": "deny", "reason": "destructive content deletion" },
+    { "name": "create_pull_request_with_copilot", "verdict": "deny", "reason": "delegates autonomous agent action" }
+  ],
+  "egress": { "observed": ["api.github.com"] },
+  "dlp": { "block_on": ["github-token", "aws-access-key", "private-key"] },
+  "provenance": {
+    "assessment_id": "rev-2026-07-10-github-mcp-server",
+    "reviewer": "mcp-reviewer",
+    "timestamp": "2026-07-10T18:00:00Z",
+    "target_ref": "github/github-mcp-server@c36e4e4493c7"
+  }
+}
