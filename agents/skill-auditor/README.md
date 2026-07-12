@@ -3,11 +3,12 @@
 Review an **untrusted agent skill** end-to-end — both surfaces a skill can attack from,
 including the one no published skill scanner covers.
 
-- **Brains:** the `skill-security-review` method — the skill-side sibling of
-  [`mcp-security-review`](https://github.com/garymike/skills). **Not yet authored** (see
-  [Status](#status)); until it lands, the methodology anchor is the coverage map in
-  security-workflows [`docs/threat-model.md`](https://github.com/garymike/security-workflows/blob/main/docs/threat-model.md)
-  plus the toolbox's own gates.
+- **Brains:** the [`skill-security-review`](https://github.com/garymike/skills/tree/main/skills/skill-security-review)
+  method — the skill-side sibling of
+  [`mcp-security-review`](https://github.com/garymike/skills/tree/main/skills/mcp-security-review). It drives the
+  two-surface review, factor scoring, and the schema-valid `assessment.json`; security-workflows
+  [`docs/threat-model.md`](https://github.com/garymike/security-workflows/blob/main/docs/threat-model.md) remains
+  the standards anchor.
 - **Hands:** the signed `skill-audit-toolbox` image (SkillSpector + a first-party
   test-file gate).
 - **Body:** an egress-gated, credential-free sandbox to actually *execute* the skill's

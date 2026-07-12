@@ -38,7 +38,7 @@ lets it *run untrusted code safely*.
 | Flavor | Brains (skill) | Hands (toolbox) | What it does |
 |---|---|---|---|
 | **mcp-reviewer** | `mcp-security-review` | `mcp-review-toolbox` | Assess an untrusted MCP server end-to-end: static scan → sandboxed run → risk-rated report |
-| **skill-auditor** | `skill-security-review` *(to author)* | `skill-audit-toolbox` | Review an agent skill on both surfaces: static gates → sandboxed script execution → risk-rated report |
+| **skill-auditor** | [`skill-security-review`](https://github.com/garymike/skills/tree/main/skills/skill-security-review) | `skill-audit-toolbox` | Review an agent skill on both surfaces: static gates → sandboxed script execution → risk-rated report |
 | **mcp-gateway** | assess→enforce compiler *(Milestone C)* | `pipelock` *(adopted, pinned)* | Govern an MCP server at runtime: compile a review into a pipelock policy — alert-only by default, enforce opt-in |
 | llm-redteam | *(Promptfoo-driven)* | `sast-toolbox` + Promptfoo | Red-team a running LLM app for prompt injection / data exfiltration |
 | supply-chain-watchdog | — | base + Trivy/osv-scanner | Runtime dependency + egress monitoring inside a pipeline |
@@ -56,13 +56,16 @@ flavor unit, and the static→dynamic escalation — are recorded as [ADRs](docs
 
 ## Status
 
-Foundation + three flavor scaffolds — **mcp-reviewer**
+Foundation + three built flavors — **mcp-reviewer**
 ([`agents/mcp-reviewer/`](agents/mcp-reviewer/)), **skill-auditor**
 ([`agents/skill-auditor/`](agents/skill-auditor/)), and **mcp-gateway**
-([`agents/mcp-gateway/`](agents/mcp-gateway/) — Milestone B wraps the pinned `pipelock` engine; the
-assess→enforce compiler is Milestone C). The remaining flavors (llm-redteam,
-supply-chain-watchdog) are designed but not yet built. The `skill-security-review` method
-that skill-auditor calls is not yet authored (see its README) — the next brains-side piece.
+([`agents/mcp-gateway/`](agents/mcp-gateway/) — complete: wraps the pinned `pipelock` engine, compiles a
+review into runtime policy, renders a second OPA/Rego adapter, and gates a real pinned server end-to-end).
+Both review flavors now have their brains:
+[`mcp-security-review`](https://github.com/garymike/skills/tree/main/skills/mcp-security-review) drives
+`mcp-reviewer`, and
+[`skill-security-review`](https://github.com/garymike/skills/tree/main/skills/skill-security-review) drives
+`skill-auditor`. The remaining flavors (llm-redteam, supply-chain-watchdog) are designed but not yet built.
 
 ## Relationship to the rest of the platform
 

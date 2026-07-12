@@ -4,8 +4,8 @@
 #
 # The escalation ladder (ADR-0005): static rules are a cheap pre-filter and are evadable (SkillCloak,
 # arXiv 2607.02357), so the gate's flagged files become the *detonation candidates* the sandbox
-# confirms by execution. Methodology: the skill-security-review method (to be authored, mirrors
-# mcp-security-review); until then, security-workflows docs/threat-model.md is the coverage anchor.
+# confirms by execution. Methodology: the skill-security-review method (garymike/skills, mirrors
+# mcp-security-review); security-workflows docs/threat-model.md is the standards anchor.
 #
 # Usage: ./review.sh <name>       where the skill is cloned at ./targets/<name>
 set -euo pipefail
