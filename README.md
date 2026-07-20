@@ -1,7 +1,14 @@
 # security-agents
 
-Tier 2 of a layered security platform: deployable security agents that run
-dynamic analysis (executing untrusted targets) safely, in isolation.
+The runtime layer of a small security platform with one throughline: most AI-native security
+tooling stops at advice, and this platform turns advice into a control that blocks. Here that means
+deployable agents that run dynamic analysis of untrusted targets (MCP servers, agent skills, LLM
+apps) safely in isolation, and the platform's runtime-enforcement pillar: the assess-to-enforce MCP
+gateway, which compiles a security review into a firewall policy that blocks unapproved egress and
+tool calls. The static half, a gate that fails the build on auto-run malice, is in
+[security-workflows](https://github.com/garymike/security-workflows); the methodology that produces
+the reviews is in [garymike/skills](https://github.com/garymike/skills). Assess in the skills,
+enforce in workflows and here.
 
 > **Isolation is a property of the deployment, not the tool.** Static scanners can be
 > centralized into shared, signed images
@@ -17,6 +24,25 @@ dynamic analysis (executing untrusted targets) safely, in isolation.
 | **1: static** | [security-workflows](https://github.com/garymike/security-workflows) | Pinned, signed scanner images + reusable workflows. The hands (tool-belt). Safe to run anywhere. |
 | **1.5: skills** | [garymike/skills](https://github.com/garymike/skills) | The security skills: methodology and judgment. The brains. |
 | **2: agents** | **this repo** | Deployable agents = skill + toolbox + isolated sandbox. Where dynamic analysis lives. |
+
+## Where this is ahead of the field
+
+A security review is usually a document. The [assess-to-enforce MCP gateway](agents/mcp-gateway)
+compiles one into a running control: an `mcp-reviewer` `assessment.json` becomes a firewall policy,
+through an engine-neutral [contract](docs/mcp-policy-contract.md) with swappable adapters (pipelock
+locally, OPA for enterprise). It runs alert-only by default and blocks on opt-in, and it is proven
+end to end against a real pinned server: only the hosts and tools the review approved get through,
+in both engines. This is the runtime half of assess to enforce, and the structural one, since it
+depends on no competitor's gap staying open. Worked example with the runnable proof: the
+[threat profiles](docs/threats/).
+
+## What's adopted, what's first-party
+
+| | What | Why |
+|---|---|---|
+| **Adopted** (pinned, signed) | pipelock (the firewall engine), OPA (the enterprise policy engine), and the Tier-1 toolbox images | Do not reinvent a solved problem |
+| **First-party** (only at the gaps) | the assess-to-enforce compiler and the engine-neutral `mcp-runtime-policy` contract | Turn a review into runtime enforcement, which nothing off the shelf does |
+| **Modular** (the mechanism) | the contract with swappable adapters, flavor-as-the-unit agents, the egress-gated sandbox | So engines and flavors swap without moving the thesis |
 
 ## Anatomy of an agent
 
