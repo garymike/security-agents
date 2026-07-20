@@ -11,7 +11,7 @@ I will acknowledge receipt within 48 hours and aim to resolve critical issues wi
 
 ## Note on this repo's nature
 
-This repo builds tools that **run untrusted code in a sandbox** (dynamic analysis). The
+This repo builds tools that run untrusted code in a sandbox (dynamic analysis). The
 sandboxes are egress-gated and credential-free by design; if you find a way for a target
-under review to escape the sandbox or reach host credentials, that is a critical finding —
-please report it privately.
+under review to escape the sandbox or reach host credentials, that is a critical finding.
+Please report it privately.

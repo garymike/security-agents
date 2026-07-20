@@ -1,18 +1,19 @@
 # End-to-end example: gating `github-mcp-server`
 
-A real, pinned MCP server run through the whole chain — **review → `assessment.json` → compile → enforce** —
-showing the gate **allow exactly what the server legitimately needs and block the rest**, across *both* engines.
+A real, pinned MCP server run through the whole chain (review, then `assessment.json`, then compile, then
+enforce), showing the gate allow exactly what the server legitimately needs and block the rest, across
+both engines.
 
 ## The target (pinned)
 
 - **[github/github-mcp-server](https://github.com/github/github-mcp-server)** @ `c36e4e4493c7` (2026-07-10), MIT, ~31k★.
-- **Legitimate egress:** `api.github.com` (the default GitHub API host — `pkg/utils/api.go`).
+- **Legitimate egress:** `api.github.com` (the default GitHub API host, `pkg/utils/api.go`).
 - **Integrity pin:** the distributed container image digest `ghcr.io/github/github-mcp-server@sha256:e25564dc…`.
-- **Tools:** ~100; [`assessment.json`](assessment.json) reviews a representative subset (reads → `allow`,
-  mutations → `warn`, destructive/autonomous → `deny`).
+- **Tools:** ~100; [`assessment.json`](assessment.json) reviews a representative subset (reads are `allow`,
+  mutations are `warn`, destructive or autonomous are `deny`).
 
-> Manifest-based: verdicts come from reviewing the server's *documented tools + known egress*, not a live
-> sandbox detonation (that's the `mcp-reviewer` dynamic pass; it needs `docker compose`).
+> Manifest-based: verdicts come from reviewing the server's documented tools and known egress, not a live
+> sandbox detonation (that is the `mcp-reviewer` dynamic pass; it needs `docker compose`).
 
 ## The chain
 
@@ -43,12 +44,12 @@ mcp_tool_policy:
 
 ## Measured verdicts (this is what actually happens)
 
-**pipelock** (egress, via `pipelock explain` — DNS-free):
+**pipelock** (egress, via `pipelock explain`, DNS-free):
 
 | Request | observe (default, alert-only) | enforce |
 |---|---|---|
-| egress → `api.github.com` (approved) | allowed | **ALLOWED** |
-| egress → `exfil.attacker.test` (not approved) | allowed + signed receipt | **BLOCKED** (`allowlist`) |
+| egress to `api.github.com` (approved) | allowed | **ALLOWED** |
+| egress to `exfil.attacker.test` (not approved) | allowed + signed receipt | **BLOCKED** (`allowlist`) |
 
 **OPA/Rego** (default-deny PDP, via `opa eval`):
 
@@ -59,7 +60,7 @@ mcp_tool_policy:
 | egress `api.github.com` | `allow = true` |
 | egress `exfil.attacker.test` | `allow = false` |
 
-**One review, two engines, the same least-privilege outcome** — and only `api.github.com` gets through, because
+One review, two engines, the same least-privilege outcome, and only `api.github.com` gets through, because
 that is the only host the review observed. Everything traces back to a finding in [`assessment.json`](assessment.json).
 
 ## Reproduce / verify
