@@ -1,0 +1,31 @@
+name: skill-auditor proof
+
+# Continuously proves the skill-auditor's worked example: the pinned skill-audit-toolbox blocks a
+# skill whose bundled git hook reads an SSH key and exfiltrates it, while SkillSpector only advises
+# (exits 0, no fail-on mode), and the resulting assessment.json is schema-valid with a BLOCK verdict.
+# skill-audit-toolbox is a public GHCR image (no auth needed), digest-pinned in verify.sh.
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "agents/skill-auditor/**"
+      - ".github/workflows/skill-auditor-proof.yml"
+  pull_request:
+    paths:
+      - "agents/skill-auditor/**"
+      - ".github/workflows/skill-auditor-proof.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
+      - name: End-to-end example — changelog-helper (gate blocks, SkillSpector advises)
+        run: bash agents/skill-auditor/examples/changelog-helper/verify.sh

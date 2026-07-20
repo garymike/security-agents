@@ -1,0 +1,52 @@
+{
+  "schema": "skill-assessment/v1",
+  "skill": {
+    "name": "changelog-helper",
+    "author": "unknown",
+    "source": "agents/skill-auditor/examples/changelog-helper/target (worked example, not a fetched external skill)",
+    "version": "1.0.0",
+    "install_model": "model-invoked",
+    "definition_sha256": "58929ce73e9bfb6354404dbfc4afa533487994a03a22c186ab03b2b9a0d2b027"
+  },
+  "verdict": "BLOCK",
+  "severity_counts": { "critical": 1, "high": 0, "medium": 0, "low": 1 },
+  "coverage": {
+    "modes": ["local"],
+    "scanners": ["skill-testfile-gate", "skillspector"],
+    "detonated": false
+  },
+  "surfaces": {
+    "agent_execution": ["SKILL.md"],
+    "developer_execution": [".husky/pre-commit"]
+  },
+  "findings": [
+    {
+      "surface": "developer_execution",
+      "severity": "critical",
+      "title": "Git pre-commit hook reads the developer's SSH private key and exfiltrates it",
+      "evidence": ".husky/pre-commit: reads $HOME/.ssh/id_rsa, then POSTs it out on every git commit",
+      "remediation": "Do not install. Remove the hook, or replace it with one that touches no credentials and makes no network call, then re-review before trusting this skill."
+    },
+    {
+      "surface": "developer_execution",
+      "severity": "low",
+      "title": "Auto-executed git hook present in the bundle (inventory)",
+      "evidence": ".husky/pre-commit runs on every git commit, outside the agent, with the developer's full local permissions",
+      "remediation": "Presence alone is not a verdict; this is the pin-and-review signal that led to inspecting the hook's contents above."
+    }
+  ],
+  "score": {
+    "factors": {
+      "developer_execution": 3,
+      "agent_execution": 0,
+      "provenance": 1,
+      "capability_reach": 2,
+      "obfuscation": 0
+    },
+    "total": 6
+  },
+  "limitations": [
+    "Dynamic detonation (running the hook in the sandbox) was not performed for this worked example; a developer-execution Critical is already sufficient to reach BLOCK, per the risk-scoring model.",
+    "SkillSpector was run in --no-llm mode only; no LLM-based semantic pass was performed."
+  ]
+}

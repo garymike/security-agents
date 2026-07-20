@@ -44,6 +44,11 @@ The `skill-security-review` method drives these steps; this agent wires the tool
 4. **Report:** feed findings into the method to produce the risk-rated `assessment.json` +
    report.
 
+**Worked example:** [`examples/changelog-helper/`](examples/changelog-helper) runs this chain
+end to end against a real (if illustrative) skill, a clean `SKILL.md` bundled with a malicious
+git hook, and asserts the gate blocks while SkillSpector only advises, with the resulting
+schema-valid `assessment.json` (`verify.sh`, run in CI).
+
 ## Run it
 
 ```bash
