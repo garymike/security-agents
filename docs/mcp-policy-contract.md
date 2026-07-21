@@ -8,13 +8,14 @@ does that, because they all start from hand-authored YAML.
 ```
 assessment.json  ──►  policy contract (this schema)  ──►  adapter  ──►  gateway config
 (mcp-reviewer)        (engine-agnostic)                   (pipelock)     (pipelock.yaml)
-                                                          (ContextForge) (OPA/Rego, built ✓)
+                                                          (OPA/Rego, built ✓)
 ```
 
 The contract is why picking an engine costs little (see [ADR-0007](adr/0007-runtime-gateway-and-assess-enforce.md)):
 the compiler targets this contract, and a thin per-engine adapter renders it. Two adapters exist:
-[pipelock](https://github.com/luckyPipewrench/pipelock) (local firewall) and OPA/Rego (the ContextForge
-enterprise tier). [`rego-proof.sh`](../agents/mcp-gateway/compiler/rego-proof.sh) shows OPA reaching the same
+[pipelock](https://github.com/luckyPipewrench/pipelock) (local firewall) and a self-authored OPA/Rego
+adapter (the policy language an enterprise gateway like ContextForge would also use).
+[`rego-proof.sh`](../agents/mcp-gateway/compiler/rego-proof.sh) shows OPA reaching the same
 allow/deny as pipelock from the same contract, so the neutrality is proven rather than asserted.
 
 ## Schema

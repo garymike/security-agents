@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rego-proof.sh — proves the OPA/Rego adapter (the ContextForge / enterprise-tier rendering) enforces the SAME
+# rego-proof.sh — proves the self-authored OPA/Rego adapter enforces the SAME
 # neutral contract as the pipelock adapter: default-deny, allow only a review-approved tool or an observed egress
 # host. Two engines, one mcp-runtime-policy/v0.1 contract, same allow/deny -> the contract is engine-neutral, not
 # a single-adapter fiction. The egress case is the cross-engine equivalence (pipelock strict-mode allowlist blocks

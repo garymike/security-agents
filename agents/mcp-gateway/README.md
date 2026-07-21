@@ -77,7 +77,8 @@ approved tools and blocks the rest, in both engines (`verify.sh`, run in CI).
 - **Milestone C:** the assess-to-enforce [compiler](compiler/) (`assessment.json` to policy) plus an
   enforce-mode CI [proof-fixture](compiler/proof.sh) asserting that review-unapproved egress is blocked by
   the generated policy, plus the [neutral policy-contract spec](../../docs/mcp-policy-contract.md). ✅
-- **Milestone D:** the OPA/Rego adapter (ContextForge enterprise tier), a second adapter of the same
-  contract, with [`rego-proof.sh`](compiler/rego-proof.sh) proving OPA reaches the same allow/deny (the
+- **Milestone D:** a second adapter, self-authored, rendering the contract to OPA/Rego (the policy
+  language an enterprise gateway like ContextForge would also use), with
+  [`rego-proof.sh`](compiler/rego-proof.sh) proving OPA reaches the same allow/deny as pipelock (the
   contract is engine-neutral, not a single-adapter fiction). ✅
 - **Next:** wiring a real `mcp-reviewer` run end to end (review, then assessment.json, then compile, then enforce).
