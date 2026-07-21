@@ -1,6 +1,6 @@
 name: Security
 
-# Dogfoods the Tier-1 platform (garymike/security-workflows v1.0.0) on this repo.
+# Dogfoods the Tier-1 platform (garymike/security-workflows v1.6.0) on this repo.
 
 on:
   push:
@@ -18,30 +18,30 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: garymike/security-workflows/.github/workflows/security-scan.yml@v1.0.0
+    uses: garymike/security-workflows/.github/workflows/security-scan.yml@v1.6.0
 
   gha-security:
     permissions:
       contents: read
       packages: read
-    uses: garymike/security-workflows/.github/workflows/gha-security.yml@v1.0.0
+    uses: garymike/security-workflows/.github/workflows/gha-security.yml@v1.6.0
 
   sast:
     permissions:
       contents: read
       packages: read
       security-events: write
-    uses: garymike/security-workflows/.github/workflows/sast.yml@v1.0.0
+    uses: garymike/security-workflows/.github/workflows/sast.yml@v1.6.0
 
   iac-security:
     permissions:
       contents: read
       packages: read
       security-events: write
-    uses: garymike/security-workflows/.github/workflows/iac-security.yml@v1.0.0
+    uses: garymike/security-workflows/.github/workflows/iac-security.yml@v1.6.0
 
   audit:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: garymike/security-workflows/.github/workflows/security-audit.yml@v1.0.0
+    uses: garymike/security-workflows/.github/workflows/security-audit.yml@v1.6.0

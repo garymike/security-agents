@@ -26,7 +26,7 @@ assessment.json ──► compile.py ──► mcp-runtime-policy/v0.1 ──►
 The compiler emits (from the 11 reviewed tools + 1 approved host):
 
 ```rego
-# policy.rego  (OPA / ContextForge adapter)
+# policy.rego  (the self-authored OPA/Rego adapter)
 default allow := false
 approved_tools := {"get_me", "get_file_contents", "get_commit", "get_commits", "get_repository_tree",
                    "get_diff", "create_branch", "create_or_update_file", "create_pull_request"}
