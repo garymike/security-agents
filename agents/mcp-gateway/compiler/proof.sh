@@ -11,7 +11,7 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 
-IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.0.0@sha256:49b6ee229941d0d7d0c7431949edeeb878f3bfa6f092f36abff8eed09ac7836b}"
+IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.2.0@sha256:52cc1798494e4475f74de7fc5dfb9ba8b8ae752b4f6efbcf8b2d7ad1e7d4ba75}"
 # A host the review never observed. `.test` is reserved + non-resolving; `explain` is DNS-free, so the verdict
 # comes from the allowlist layer, not SSRF — a deterministic, network-independent proof.
 NONAPPROVED="https://exfil.attacker.test/steal?data=1"

@@ -87,7 +87,7 @@ MCP's 2026-07-28 revision added surfaces the assess tier now scores
 ([`mcp-security-review`](https://github.com/garymike/skills) records `mcp_apps_status`, `tasks_status`, and
 `handle_security`). Not all of them reach the enforcement tier, and saying which is the point of
 `residuals`. The triage below was verified against pipelock's own configuration documentation at the
-pinned 3.0.0, and re-checked through 3.2.0.
+pinned 3.2.0 (the triage was first done against 3.0.0 and re-verified on 3.2.0, which changed nothing).
 
 | Assess-tier finding | Enforceable here? | How, or why not |
 |---|---|---|

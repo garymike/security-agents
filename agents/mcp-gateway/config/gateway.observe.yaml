@@ -1,4 +1,4 @@
-# mcp-gateway — ALERT-ONLY (observe) policy for pipelock 3.0.0.
+# mcp-gateway — ALERT-ONLY (observe) policy for pipelock 3.2.0.
 #
 # Posture (see the security-workflows plan, Q4/Q4b): alert-only is the SHIPPED DEFAULT. Every control's
 # `action` is `warn`, so a malicious call is RECORDED (a signed action receipt) but not blocked. To enforce,
@@ -6,7 +6,7 @@
 # compiler (Milestone C) GENERATES this file from an `mcp-reviewer` assessment; this hand-authored baseline is
 # the Milestone-B starting point.
 #
-# Pinned to the pipelock 3.0.0 schema — the config schema is version-coupled to the binary, so this file and the
+# Pinned to the pipelock 3.2.0 schema — the config schema is version-coupled to the binary, so this file and the
 # image digest in compose.yml move together.
 
 version: 1

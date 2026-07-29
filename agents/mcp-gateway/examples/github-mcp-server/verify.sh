@@ -5,7 +5,7 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 
-PIPE_IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.0.0@sha256:49b6ee229941d0d7d0c7431949edeeb878f3bfa6f092f36abff8eed09ac7836b}"
+PIPE_IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.2.0@sha256:52cc1798494e4475f74de7fc5dfb9ba8b8ae752b4f6efbcf8b2d7ad1e7d4ba75}"
 OPA_IMAGE="${OPA_IMAGE:-docker.io/openpolicyagent/opa:1.18.2@sha256:cba27d3c6af2feba1e4d6e6b5e24df5b53db332420d4148a90acccd12efae6ed}"
 
 runtime_ok(){ case "${1##*/}" in docker*|podman*) "$1" info >/dev/null 2>&1;; wslc*) "$1" image ls >/dev/null 2>&1;; *) "$1" info >/dev/null 2>&1;; esac; }
