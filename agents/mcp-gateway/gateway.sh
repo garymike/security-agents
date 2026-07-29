@@ -15,7 +15,7 @@ cd "$(dirname "$0")"
 MODE="${1:-observe}"
 case "$MODE" in observe|enforce) ;; *) echo "usage: ./gateway.sh [observe|enforce]" >&2; exit 2 ;; esac
 CONFIG="/config/gateway.${MODE}.yaml"
-IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.0.0@sha256:49b6ee229941d0d7d0c7431949edeeb878f3bfa6f092f36abff8eed09ac7836b}"
+IMAGE="${PIPELOCK_IMAGE:-ghcr.io/luckypipewrench/pipelock:3.2.0@sha256:52cc1798494e4475f74de7fc5dfb9ba8b8ae752b4f6efbcf8b2d7ad1e7d4ba75}"
 
 # A runtime must be present AND functional (installed != running). Health-check before selecting.
 runtime_ok() {

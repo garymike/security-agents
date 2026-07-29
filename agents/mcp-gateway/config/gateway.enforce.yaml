@@ -1,11 +1,11 @@
-# mcp-gateway — ENFORCE policy for pipelock 3.0.0.
+# mcp-gateway — ENFORCE policy for pipelock 3.2.0.
 #
 # The opt-in counterpart to gateway.observe.yaml (plan Q4b): identical policy, but every `action` is `block`.
 # A flagged call is STOPPED (fail-closed) with a structured block message + a signed receipt. This is the mode
 # the CI proof-fixture (Milestone C) runs in to prove "review-flagged X -> policy blocks X." Alert-only remains
 # the shipped default; this is the deliberate flip.
 #
-# Pinned to the pipelock 3.0.0 schema (version-coupled to the image digest in compose.yml).
+# Pinned to the pipelock 3.2.0 schema (version-coupled to the image digest in compose.yml).
 
 version: 1
 mode: balanced

@@ -70,7 +70,7 @@ bash verify.sh          # regenerates the policies and re-asserts every verdict 
 
 # or by hand:
 python ../../compiler/compile.py assessment.json /tmp/gh
-docker run --rm -v /tmp/gh:/config:ro ghcr.io/luckypipewrench/pipelock:3.0.0 \
+docker run --rm -v /tmp/gh:/config:ro ghcr.io/luckypipewrench/pipelock:3.2.0 \
   explain --config /config/gateway.enforce.yaml https://exfil.attacker.test/x     # -> BLOCKED (allowlist)
 ```
 
