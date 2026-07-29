@@ -14,8 +14,8 @@ services:
     image: ghcr.io/luckypipewrench/pipelock:3.2.0@sha256:52cc1798494e4475f74de7fc5dfb9ba8b8ae752b4f6efbcf8b2d7ad1e7d4ba75
     volumes:
       - ./config:/config:ro          # the policy (authored now; compiler-generated in Milestone C)
+      - ./out:/out                   # evidence: flight-recorder receipts, and the kill-switch sentinel
       # For the proxy form, also mount:
-      #   - ./out:/out               # signed action receipts — audit evidence from outside the agent
       #   - ./targets:/target:ro     # the MCP server being protected, read-only
     # Default command validates the policy + shows a content-aware block. To actually mediate a stdio MCP
     # server, the CLIENT launches the proxy form instead of the server (put this in the client's MCP config):
