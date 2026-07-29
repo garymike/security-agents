@@ -18,7 +18,7 @@ both engines.
 ## The chain
 
 ```
-assessment.json ──► compile.py ──► mcp-runtime-policy/v0.1 ──► pipelock (gateway.{observe,enforce}.yaml)
+assessment.json ──► compile.py ──► mcp-runtime-policy/v0.2 ──► pipelock (gateway.{observe,enforce}.yaml)
 (a review of a                                            └─► OPA/Rego  (policy.rego)
  real pinned server)
 ```
