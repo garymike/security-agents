@@ -67,5 +67,7 @@ cat <<EOF
 Alert-only ("observe") is the default: findings are RECORDED, not blocked. Run ./gateway.sh enforce to block.
 To mediate a real stdio MCP server (the client launches pipelock instead of the server):
   pipelock mcp proxy --config $CONFIG -- <server start command>
-Signed action receipts (audit evidence from outside the agent) are written when flight_recorder.dir is set.
+Evidence: flight_recorder.dir is set to /out in both configs, so receipts are written there on the
+proxy path (compose maps ./out:/out). `check` validates and scans without a session, so it emits none.
+Kill switch: create /out/KILL to deny all traffic without a restart; delete it to restore.
 EOF

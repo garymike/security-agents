@@ -51,3 +51,26 @@ mcp_tool_policy:
       tool_pattern: '(?i)^(bash|shell|exec|run_command|execute|terminal)$'
       arg_pattern: '(?i)(bash\s+-i\s+>&|/dev/tcp/|mkfifo\s+|nc\s+-e|ncat\s+-e)'
       action: warn
+
+# Tamper-evident evidence. `enabled` defaults true but is INERT without `dir`, so a receipt
+# is only written once this points somewhere mounted (compose maps ./out:/out). Without it the
+# gateway blocks and warns with nothing to show afterwards, which is the audit half of the
+# assess-to-enforce loop missing. `redact` keeps matched secrets out of the evidence itself.
+# `require_receipts` is deliberately left false: pipelock 3.1.0+ rejects a config that requires
+# receipts without `signing_key_path`, and this flavor ships no key. Provide one and set both
+# together if you need signed checkpoints.
+flight_recorder:
+  enabled: true
+  dir: /out
+  redact: true
+  retention_days: 90
+
+# Emergency deny-all for incident response. `enabled` is an activation SOURCE, not a subsystem
+# switch: setting it true denies every request from startup. It stays false so the gateway runs
+# normally, while `sentinel_file` gives an operator a no-restart kill: create that file and the
+# gateway denies all traffic; delete it to restore. This is the enforce-tier answer to the
+# "revocation path confirmed" item in mcp-security-review's Part D checklist.
+kill_switch:
+  enabled: false
+  sentinel_file: /out/KILL
+  message: "mcp-gateway kill switch active: all traffic denied pending incident review"
