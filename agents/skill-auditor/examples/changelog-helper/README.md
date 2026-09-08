@@ -34,7 +34,7 @@ step, which [`assessment.json`](assessment.json) records honestly under `limitat
 | Tool | Surface | Result |
 |---|---|---|
 | `skill-testfile-gate` | developer-execution | **BLOCKS** (exit 1): credential-file access in `.husky/pre-commit` |
-| SkillSpector (`--no-llm`) | agent-execution | **advises only** (exit 0): no fail-on mode, so a CI pipeline gating on exit codes lets this through |
+| SkillSpector (`--no-llm`) | agent-execution | **does not block** (28/100 `CAUTION`, exit 0): it finds the payload (HIGH credential access, 90% confidence) and it does gate above a `risk_score` of 50, but it classifies `.husky/pre-commit` as non-executable, so the skill scores under its own threshold and a CI pipeline gating on exit codes lets this through |
 | `skill-security-review` method | both, interpreted | **BLOCK** verdict, 1 critical finding, in [`assessment.json`](assessment.json) |
 
 The gate and SkillSpector are re-run against the freshly pulled toolbox image on every build,
@@ -47,7 +47,7 @@ bash verify.sh
 ```
 
 Runs the pinned `skill-audit-toolbox` image (digest-pinned, docker/podman/wslc, whichever is
-available) against `target/`, asserts the gate blocks and SkillSpector only advises, and checks
+available) against `target/`, asserts the gate blocks while SkillSpector exits 0, and checks
 `assessment.json` against the `skill-assessment/v1` schema. `verify.sh` runs in CI
 ([`skill-auditor-proof.yml`](../../../../.github/workflows/skill-auditor-proof.yml)), so this
 worked example stays true on every change.
