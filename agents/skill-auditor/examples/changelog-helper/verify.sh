@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # verify.sh — re-prove the changelog-helper end-to-end example on every run: run the pinned skill-audit-toolbox
 # against a skill whose SKILL.md is clean but whose bundled git hook reads an SSH key and exfiltrates it (the
-# Gecko developer-execution vector). Asserts the gate BLOCKS (fails the build) while SkillSpector only ADVISES
-# (reports, exits 0), the enforce-vs-advise gap the skill-auditor's brains (skill-security-review) interprets into
-# the BLOCK verdict recorded in assessment.json. Runtime-agnostic: docker -> podman -> wslc (health-checked).
+# Gecko developer-execution vector). Asserts the gate BLOCKS (fails the build) while SkillSpector reports the
+# payload and still exits 0. SkillSpector is NOT advisory: it gates above a risk_score of 50 and does block the
+# same payload class in a .test.ts carrier (73/100). It misses THIS carrier because it classifies
+# .husky/pre-commit as non-executable, scoring the skill 28/100. That carrier-coverage gap is what the
+# skill-auditor's brains (skill-security-review) interpret into the BLOCK verdict recorded in assessment.json.
+# Both halves of that gap are pinned upstream in security-workflows tests/gate-proof.sh #4. Runtime-agnostic: docker -> podman -> wslc (health-checked).
 set -uo pipefail
 cd "$(dirname "$0")"
 
@@ -36,11 +39,11 @@ echo "$gate_out"
 echo "PASS: gate blocks (exit $gate_rc)"
 
 echo ""
-echo "== 2. SkillSpector MUST only advise (reports, but exits 0, no fail-on mode) =="
+echo "== 2. SkillSpector MUST NOT block this carrier (reports the payload, scores it 28/100, exits 0) =="
 ss_out="$(run_toolbox skillspector scan /skill --no-llm 2>&1)"; ss_rc=$?
 echo "$ss_out"
-[ "$ss_rc" -eq 0 ] || fail "SkillSpector exited nonzero ($ss_rc); if it now gates, the enforce-vs-advise framing needs revisiting"
-echo "PASS: SkillSpector advises only (exit 0); a CI pipeline gating on exit code alone would let this skill through"
+[ "$ss_rc" -eq 0 ] || fail "SkillSpector exited nonzero ($ss_rc); its coverage of the git-hook carrier changed, re-measure before trusting the framing"
+echo "PASS: SkillSpector does not block this carrier (exit 0); a CI pipeline gating on exit code alone would let this skill through"
 
 echo ""
 echo "== 3. assessment.json MUST be schema-valid and record the BLOCK verdict =="
