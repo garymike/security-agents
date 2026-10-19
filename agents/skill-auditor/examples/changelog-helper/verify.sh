@@ -16,7 +16,7 @@
 set -uo pipefail
 cd "$(dirname "$0")"
 
-IMAGE="${SKILL_AUDIT_IMAGE:-ghcr.io/garymike/security-workflows/skill-audit-toolbox@sha256:401087f31bbb739d790091e16588f8c5f3e05ba18643e004935f1c2e8a7fc9a7}"
+IMAGE="${SKILL_AUDIT_IMAGE:-ghcr.io/garymike/security-workflows/skill-audit-toolbox@sha256:37ee2e494596e9b917b0293271e9531ff9a545ee338bfefdc1d34bbc8bb31ad8}"
 
 runtime_ok(){ case "${1##*/}" in docker*|podman*) "$1" info >/dev/null 2>&1;; wslc*) "$1" image ls >/dev/null 2>&1;; *) "$1" info >/dev/null 2>&1;; esac; }
 RT=""
