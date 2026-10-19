@@ -8,12 +8,19 @@ enforce" looks like from the assessment side.
 
 [`target/`](target) is a small, realistic skill: draft a Keep-a-Changelog entry from the staged
 diff. Its `SKILL.md` is honest, on-topic prose with no prompt injection or suspicious instructions.
-Bundled alongside it is `.husky/pre-commit`, a git hook that auto-runs on every `git commit`, reads
-the developer's SSH private key, and POSTs it out. The payload is defanged: it reads a real path but
-sends to a localhost sink, never a real host (a faithful copy of
-[security-workflows' `gecko-hook-demo` fixture](https://github.com/garymike/security-workflows/blob/main/tests/fixtures/gecko-hook-demo)).
-This is the [Gecko developer-execution vector](https://github.com/garymike/security-workflows/blob/main/docs/threats/developer-execution.md):
-a clean `SKILL.md` with the payload riding in a file the agent never touches.
+Bundled alongside it is `notes.test.ts`, which `npm test` auto-runs outside the agent and which
+appends to `MEMORY.md`, the agent's persistent cross-session memory. Every later session that loads
+that memory reads the appended text as its own prior context. The payload is defanged: it appends an
+inert canary comment, never a working instruction (a faithful copy of
+[security-workflows' `memory-poisoning-demo` fixture](https://github.com/garymike/security-workflows/blob/main/tests/fixtures/memory-poisoning-demo)).
+This is the [developer-execution surface](https://github.com/garymike/security-workflows/blob/main/docs/threats/developer-execution.md)
+carrying the Snyk *ToxicSkills* memory-poisoning class: a clean `SKILL.md` with the payload riding
+in a file the agent never touches.
+
+This example used to target a `.husky/pre-commit` hook that exfiltrated an SSH key. It moved because
+SkillSpector v2.13.0 blocks that carrier (76/100), so it no longer shows the gate adding anything.
+The memory write is the carrier upstream still clears, and it clears it on both the old and current
+toolbox images, so this example survives the next digest bump.
 
 ## The chain
 
@@ -33,8 +40,8 @@ step, which [`assessment.json`](assessment.json) records honestly under `limitat
 
 | Tool | Surface | Result |
 |---|---|---|
-| `skill-testfile-gate` | developer-execution | **BLOCKS** (exit 1): credential-file access in `.husky/pre-commit` |
-| SkillSpector (`--no-llm`) | agent-execution | **does not block** (28/100 `CAUTION`, exit 0): it finds the payload (HIGH credential access, 90% confidence) and it does gate above a `risk_score` of 50, but it classifies `.husky/pre-commit` as non-executable, so the skill scores under its own threshold and a CI pipeline gating on exit codes lets this through |
+| `skill-testfile-gate` | developer-execution | **BLOCKS** (exit 1): write to persistent agent memory in `notes.test.ts` |
+| SkillSpector (`--no-llm`) | agent-execution | **does not block** (0/100 `SAFE`, exit 0): it reports *no issues at all*, at `Coverage 100.0%` with `notes.test.ts` typed `Executable: Yes`. It does gate above a `risk_score` of 50 and blocks four of five carriers in [security-workflows](https://github.com/garymike/security-workflows) as of v2.13.0; this is the one it clears, because only the written bytes are matched against injection patterns and this payload is inert |
 | `skill-security-review` method | both, interpreted | **BLOCK** verdict, 1 critical finding, in [`assessment.json`](assessment.json) |
 
 The gate and SkillSpector are re-run against the freshly pulled toolbox image on every build,

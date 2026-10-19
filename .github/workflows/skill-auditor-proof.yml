@@ -1,8 +1,9 @@
 name: skill-auditor proof
 
 # Continuously proves the skill-auditor's worked example: the pinned skill-audit-toolbox blocks a
-# skill whose bundled git hook reads an SSH key and exfiltrates it, while SkillSpector only advises
-# (exits 0, no fail-on mode), and the resulting assessment.json is schema-valid with a BLOCK verdict.
+# skill whose bundled test file appends to MEMORY.md, the agent's persistent cross-session memory,
+# while SkillSpector reports no issues at all and exits 0 (0/100 SAFE) — the one carrier it still
+# clears as of v2.13.0 — and the resulting assessment.json is schema-valid with a BLOCK verdict.
 # skill-audit-toolbox is a public GHCR image (no auth needed), digest-pinned in verify.sh.
 
 on:
@@ -27,5 +28,5 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           persist-credentials: false
-      - name: End-to-end example — changelog-helper (gate blocks, SkillSpector advises)
+      - name: End-to-end example — changelog-helper (gate blocks, SkillSpector clears)
         run: bash agents/skill-auditor/examples/changelog-helper/verify.sh

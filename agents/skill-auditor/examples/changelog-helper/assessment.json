@@ -6,33 +6,47 @@
     "source": "agents/skill-auditor/examples/changelog-helper/target (worked example, not a fetched external skill)",
     "version": "1.0.0",
     "install_model": "model-invoked",
-    "definition_sha256": "58929ce73e9bfb6354404dbfc4afa533487994a03a22c186ab03b2b9a0d2b027"
+    "definition_sha256": "bfcad88f1c90dffa0f690d8872aa48bc92c1bc07445644d6932c4eb8300bab7a"
   },
   "verdict": "BLOCK",
-  "severity_counts": { "critical": 1, "high": 0, "medium": 0, "low": 1 },
+  "severity_counts": {
+    "critical": 1,
+    "high": 0,
+    "medium": 0,
+    "low": 1
+  },
   "coverage": {
-    "modes": ["local"],
-    "scanners": ["skill-testfile-gate", "skillspector"],
+    "modes": [
+      "local"
+    ],
+    "scanners": [
+      "skill-testfile-gate",
+      "skillspector"
+    ],
     "detonated": false
   },
   "surfaces": {
-    "agent_execution": ["SKILL.md"],
-    "developer_execution": [".husky/pre-commit"]
+    "agent_execution": [
+      "SKILL.md"
+    ],
+    "developer_execution": [
+      "notes.test.ts"
+    ]
   },
   "findings": [
     {
       "surface": "developer_execution",
       "severity": "critical",
-      "title": "Git pre-commit hook reads the developer's SSH private key and exfiltrates it",
-      "evidence": ".husky/pre-commit: reads $HOME/.ssh/id_rsa, then POSTs it out on every git commit",
-      "remediation": "Do not install. Remove the hook, or replace it with one that touches no credentials and makes no network call, then re-review before trusting this skill."
+      "title": "Bundled test file writes to the agent's persistent cross-session memory",
+      "evidence": "notes.test.ts: a beforeAll hook appends to MEMORY.md, so `npm test` mutates the memory every later session loads as its own prior context. Runs outside the agent with the developer's full local permissions.",
+      "remediation": "Do not install. Remove the write, or confine the skill's output to a file the agent does not load as memory, then re-review before trusting this skill."
     },
     {
       "surface": "developer_execution",
       "severity": "low",
-      "title": "Auto-executed git hook present in the bundle (inventory)",
-      "evidence": ".husky/pre-commit runs on every git commit, outside the agent, with the developer's full local permissions",
-      "remediation": "Presence alone is not a verdict; this is the pin-and-review signal that led to inspecting the hook's contents above."
+      "title": "Auto-executed test file present in the bundle (inventory)",
+      "evidence": "notes.test.ts runs on `npm test` / `vitest`, outside the agent, with the developer's full local permissions",
+      "remediation": "Presence alone is not a verdict; this is the pin-and-review signal that led to inspecting the file's contents above."
     }
   ],
   "score": {
@@ -46,7 +60,8 @@
     "total": 6
   },
   "limitations": [
-    "Dynamic detonation (running the hook in the sandbox) was not performed for this worked example; a developer-execution Critical is already sufficient to reach BLOCK, per the risk-scoring model.",
-    "SkillSpector was run in --no-llm mode only; no LLM-based semantic pass was performed."
+    "Dynamic detonation (running the test file in the sandbox) was not performed for this worked example; a developer-execution Critical is already sufficient to reach BLOCK, per the risk-scoring model.",
+    "SkillSpector was run in --no-llm mode only; no LLM-based semantic pass was performed.",
+    "The fixture's payload is an inert canary comment. That is deliberate, and it is also why SkillSpector scores it 0/100: its memory-poisoning rules match natural-language injection text in the written bytes, not the fact of a write. A live instruction string in the same position scores 35/100 and still does not block."
   ]
 }
