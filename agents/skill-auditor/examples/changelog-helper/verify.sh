@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
 # verify.sh — re-prove the changelog-helper end-to-end example on every run: run the pinned skill-audit-toolbox
-# against a skill whose SKILL.md is clean but whose bundled git hook reads an SSH key and exfiltrates it (the
-# Gecko developer-execution vector). Asserts the gate BLOCKS (fails the build) while SkillSpector reports the
-# payload and still exits 0. SkillSpector is NOT advisory: it gates above a risk_score of 50 and does block the
-# same payload class in a .test.ts carrier (73/100). It misses THIS carrier because it classifies
-# .husky/pre-commit as non-executable, scoring the skill 28/100. That carrier-coverage gap is what the
-# skill-auditor's brains (skill-security-review) interpret into the BLOCK verdict recorded in assessment.json.
-# Both halves of that gap are pinned upstream in security-workflows tests/gate-proof.sh #4. Runtime-agnostic: docker -> podman -> wslc (health-checked).
+# against a skill whose SKILL.md is clean but whose bundled test file appends to MEMORY.md, the agent's
+# persistent cross-session memory (the Snyk ToxicSkills class). Asserts the gate BLOCKS (fails the build)
+# while SkillSpector reports nothing and exits 0.
+#
+# Why this carrier and not the git hook this example used to target: SkillSpector is not advisory, it gates
+# above a risk_score of 50, and as of v2.13.0 it blocks the git-hook carrier (76/100) and the test-file
+# carrier (64/100) too. The write to persistent memory is the one carrier it still clears: 0/100, SAFE, "no
+# security issues detected", at Coverage 100.0% with the file typed Executable: Yes. It is read, analysed,
+# and passed, because only the written bytes are matched against injection patterns and this payload is an
+# inert canary. That is the gap the skill-auditor's brains (skill-security-review) interpret into the BLOCK
+# verdict recorded in assessment.json, and it is hard-asserted upstream in security-workflows
+# tests/gate-proof.sh #4. It also holds on both the old and current toolbox images, so this example does not
+# break the next time the pinned digest moves. Runtime-agnostic: docker -> podman -> wslc (health-checked).
 set -uo pipefail
 cd "$(dirname "$0")"
 
@@ -31,18 +37,18 @@ run_toolbox(){  # mounts ./target read-only, runs the given command in the toolb
   esac
 }
 
-echo "== 1. skill-testfile-gate MUST block (the developer-execution surface: .husky/pre-commit reads ~/.ssh) =="
+echo "== 1. skill-testfile-gate MUST block (the developer-execution surface: notes.test.ts writes to MEMORY.md) =="
 gate_out="$(run_toolbox skill-testfile-gate /skill 2>&1)"; gate_rc=$?
 echo "$gate_out"
-[ "$gate_rc" -ne 0 ] || fail "gate did not block (exit $gate_rc); expected a nonzero exit on this malicious hook"
-[[ "$gate_out" == *"credential"* || "$gate_out" == *"[malice]"* ]] || fail "gate blocked but reported no credential/malice finding, investigate before trusting this proof"
+[ "$gate_rc" -ne 0 ] || fail "gate did not block (exit $gate_rc); expected a nonzero exit on this memory write"
+[[ "$gate_out" == *"memory"* || "$gate_out" == *"[malice]"* ]] || fail "gate blocked but reported no memory/malice finding, investigate before trusting this proof"
 echo "PASS: gate blocks (exit $gate_rc)"
 
 echo ""
-echo "== 2. SkillSpector MUST NOT block this carrier (reports the payload, scores it 28/100, exits 0) =="
+echo "== 2. SkillSpector MUST NOT block this carrier (0/100 SAFE, no issues detected, exits 0) =="
 ss_out="$(run_toolbox skillspector scan /skill --no-llm 2>&1)"; ss_rc=$?
 echo "$ss_out"
-[ "$ss_rc" -eq 0 ] || fail "SkillSpector exited nonzero ($ss_rc); its coverage of the git-hook carrier changed, re-measure before trusting the framing"
+[ "$ss_rc" -eq 0 ] || fail "SkillSpector exited nonzero ($ss_rc); it now covers the persistent-memory-write carrier, which was this example's last uncovered one. Re-measure, then shrink the claim here and in security-workflows rather than rewording it."
 echo "PASS: SkillSpector does not block this carrier (exit 0); a CI pipeline gating on exit code alone would let this skill through"
 
 echo ""

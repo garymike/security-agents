@@ -45,9 +45,10 @@ The `skill-security-review` method drives these steps; this agent wires the tool
    report.
 
 **Worked example:** [`examples/changelog-helper/`](examples/changelog-helper) runs this chain
-end to end against a real (if illustrative) skill, a clean `SKILL.md` bundled with a malicious
-git hook, and asserts the gate blocks while SkillSpector exits 0 on that carrier, with the resulting
-schema-valid `assessment.json` (`verify.sh`, run in CI).
+end to end against a real (if illustrative) skill, a clean `SKILL.md` bundled with a test file that
+writes to the agent's persistent memory, and asserts the gate blocks while SkillSpector reports no
+issues and exits 0 on that carrier, with the resulting schema-valid `assessment.json` (`verify.sh`,
+run in CI).
 
 ## Run it
 
