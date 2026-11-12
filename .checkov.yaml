@@ -1,0 +1,17 @@
+# Checkov policy for this repo.
+#
+# CKV_DOCKER_2 (HEALTHCHECK) is skipped for the two sandbox Dockerfiles, and each of them
+# already says why in an inline `# checkov:skip=` comment: they are ephemeral observation
+# sandboxes that `sleep infinity` while an agent execs into them; there is no service to
+# health-check, and a periodic probe would only add execution noise while untrusted code
+# is being watched.
+#
+# The inline comments are kept for the reader, but they cannot close the code-scanning
+# alerts on their own: Checkov writes inline-skipped findings into its SARIF as results
+# with an `inSource` suppression, and GitHub code scanning does not honour SARIF
+# suppressions, so the two CKV_DOCKER_2 alerts stayed open from 2026-07-09 to 2026-11-12
+# with the skip comments in place the whole time. A `skip-check` here removes the results
+# from the SARIF entirely. The shared iac-security workflow runs Checkov from the repo
+# root, where this file is picked up automatically.
+skip-check:
+  - CKV_DOCKER_2
