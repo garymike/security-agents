@@ -22,3 +22,20 @@ updates:
     groups:
       github-actions:
         patterns: ["*"]
+
+  # The two sandbox base images. Both are pinned by digest, so without these entries the
+  # python:3.12-slim pin never moves and the sandboxes quietly age. Security updates would
+  # still not cover a base image; only a version-update entry does.
+  - package-ecosystem: docker
+    directory: /agents/mcp-reviewer/sandbox
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: docker
+    directory: /agents/skill-auditor/sandbox
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
