@@ -16,39 +16,43 @@ on:
 permissions:
   contents: read
 
-# No date beside the SHAs below. Dependabot rewrites a trailing version comment only
-# when the ref is a tag, so a date written next to a main-tracking SHA is never updated
-# and goes stale on the next bump. The SHA is the record; resolve it to date a pin.
+# No comment beside the SHAs below, not even `# main`. Dependabot maintains a trailing
+# comment only when it can resolve the ref to a version, and a branch ref has none, so
+# whatever is written there rots on the next bump. zizmor's ref-version-mismatch reads
+# `# main` as a claim that the pin equals main's head, which a pin to a moving branch
+# only matches in the window after a pin move; five callers were reporting that warning
+# on 2026-11-17. A bare SHA is quiet for both, because zizmor flags a missing comment
+# only under its pedantic persona. The SHA is the record; resolve it for branch or date.
 
 jobs:
   scan:
     permissions:
       contents: read
       packages: read
-    uses: garymike/security-workflows/.github/workflows/security-scan.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c # main
+    uses: garymike/security-workflows/.github/workflows/security-scan.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c
 
   gha-security:
     permissions:
       contents: read
       packages: read
-    uses: garymike/security-workflows/.github/workflows/gha-security.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c # main
+    uses: garymike/security-workflows/.github/workflows/gha-security.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c
 
   sast:
     permissions:
       contents: read
       packages: read
       security-events: write
-    uses: garymike/security-workflows/.github/workflows/sast.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c # main
+    uses: garymike/security-workflows/.github/workflows/sast.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c
 
   iac-security:
     permissions:
       contents: read
       packages: read
       security-events: write
-    uses: garymike/security-workflows/.github/workflows/iac-security.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c # main
+    uses: garymike/security-workflows/.github/workflows/iac-security.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c
 
   audit:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: read
-    uses: garymike/security-workflows/.github/workflows/security-audit.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c # main
+    uses: garymike/security-workflows/.github/workflows/security-audit.yml@2d15ded362058a997f4d1cfe843a6faedb74f80c
