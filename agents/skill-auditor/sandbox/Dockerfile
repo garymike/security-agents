@@ -6,7 +6,7 @@
 # Node, so all three runtimes are present.
 
 # checkov:skip=CKV_DOCKER_2: ephemeral observation sandbox (sleep infinity) — no service to health-check, and a periodic HEALTHCHECK would only add execution noise while watching untrusted code. Liveness is the operator's/compose's concern.
-FROM python:3.12-slim-bookworm@sha256:8a7e7cc04fd3e2bd787f7f24e22d5d119aa590d429b50c95dfe12b3abe52f48b
+FROM python:3.15-slim-bookworm@sha256:96599df822d0e1c6bb700014a05c7f3c8cabc6e0f7ff3c4f9f69cee033b4b5d9
 
 RUN set -eux; \
     apt-get update; \
